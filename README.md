@@ -78,16 +78,6 @@ GameRev/
 3. Selecciona un simulador de **iPhone** (para ver el `TabView` móvil), **iPad** o **My Mac** (para ver el `NavigationSplitView` adaptativo de escritorio).
 4. Presiona **Run (`⌘R`)**.
 
-### Conectar la API real de IGDB (opcional)
-Sin credenciales la app funciona con el catálogo local de 24 juegos. Para activar la búsqueda en vivo:
-
-1. Crea una aplicación en <https://dev.twitch.tv/console/apps> (IGDB usa las credenciales de Twitch) y copia su **Client ID** y **Client Secret**.
-2. En la carpeta del proyecto: `cp Config/Secrets.example.xcconfig Config/Secrets.xcconfig`
-3. Pega tus valores en `Config/Secrets.xcconfig` y vuelve a compilar (`⌘R`).
-
-La app solicita el token OAuth 2.0 (`client_credentials`), lo guarda en memoria y lo renueva sola. En el Catálogo, la etiqueta cambia de `IGDB API v4` a `IGDB EN VIVO` cuando la conexión funciona. Si IGDB falla, se muestra el catálogo local con un aviso para reintentar.
-
-> `Secrets.xcconfig` está en `.gitignore`. Un secreto incluido en una app puede extraerse del binario: para publicar en la App Store, mueve la obtención del token a un servidor propio.
 
 ### Opción B: En Windows o Cualquier Navegador (Prototipo Web Interactivo)
 1. Abre el archivo `WebPrototype/index.html` haciendo doble clic desde el Explorador de Archivos de Windows.
