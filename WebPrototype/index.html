@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameRev · Lab iOS Ago-Dic 2026 · Equipo 6 (SwiftUI + Web)</title>
+  <style>
+    :root {
+      --bg-deep: #0b1323;
+      --bg-panel: #111b30;
+      --bg-card: #17243f;
+      --border-subtle: rgba(148, 163, 184, 0.16);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --ios-bg: #f2f4f8;
+      --ios-card: #ffffff;
+      --ios-text: #0f172a;
+      --ios-muted: #64748b;
+      --accent-blue: #2563eb;
+      --accent-gold: #f59e0b;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-purple: #8b5cf6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg-deep);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar de Escenas del Lab iOS */
+    .lab-sidebar {
+      width: 255px;
+      background: #080f1d;
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+
+    .brand-header {
+      padding: 20px 18px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .brand-header h1 {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .brand-badge {
+      background: #172554;
+      color: var(--accent-gold);
+      font-size: 12px;
+      font-weight: 900;
+      padding: 5px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .brand-sub {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .scene-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .scene-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 11px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .scene-btn:hover {
+      background: rgba(37, 99, 235, 0.12);
+      color: var(--text-main);
+    }
+
+    .scene-btn.active {
+      background: var(--accent-blue);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .scene-num {
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      opacity: 0.75;
+      min-width: 20px;
+    }
+
+    .sidebar-footer {
+      padding: 14px 16px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* Contenedor Principal */
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .topbar {
+      padding: 14px 26px;
+      background: rgba(17, 27, 48, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .scene-header-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .scene-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1.5px solid #38bdf8;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .scene-meta h2 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .scene-meta p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .device-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill-toggle {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 7px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .pill-toggle.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #fff;
+    }
+
+    .pill-toggle.warn {
+      border-color: rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+
+    .pill-toggle.warn.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+
+    .stage {
+      flex: 1;
+      padding: 28px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    /* Marco de iPhone */
+    .iphone-frame {
+      width: 375px;
+      height: 750px;
+      background: var(--ios-bg);
+      color: var(--ios-text);
+      border-radius: 46px;
+      border: 10px solid #263248;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .status-bar {
+      height: 40px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .dynamic-island {
+      width: 92px;
+      height: 22px;
+      background: #090d16;
+      border-radius: 999px;
+    }
+
+    .ios-navbar {
+      padding: 8px 18px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+      background: rgba(242, 244, 248, 0.9);
+      backdrop-filter: blur(8px);
+      flex-shrink: 0;
+    }
+
+    .ios-nav-btn {
+      border: none;
+      background: none;
+      color: var(--accent-blue);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .ios-nav-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ios-text);
+    }
+
+    .ios-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .ios-tabbar {
+      height: 62px;
+      background: #ffffff;
+      border-top: 1px solid rgba(15, 23, 42, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 4px 8px 8px;
+      flex-shrink: 0;
+    }
+
+    .tab-btn {
+      border: none;
+      background: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: #94a3b8;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      color: var(--accent-blue);
+    }
+
+    .tab-icon {
+      font-size: 17px;
+    }
+
+    /* Marco de MacBook Adaptativo (Escena 2 y 4) */
+    .macbook-frame {
+      width: 880px;
+      min-height: 540px;
+      background: #0f172a;
+      color: #f8fafc;
+      border-radius: 22px;
+      border: 8px solid #334155;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.6);
+      display: flex;
+      overflow: hidden;
+    }
+
+    .mac-sidebar {
+      width: 210px;
+      background: #0b1324;
+      border-right: 1px solid rgba(148, 163, 184, 0.14);
+      padding: 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mac-nav-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .mac-nav-item.active {
+      background: rgba(37, 99, 235, 0.22);
+      color: #60a5fa;
+    }
+
+    .mac-content {
+      flex: 1;
+      padding: 26px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Tarjetas y Componentes iOS */
+    .cover-box {
+      background: linear-gradient(135deg, #1e3a5f, #0f172a);
+      color: #ffffff;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .hero-cover {
+      width: 100%;
+      height: 155px;
+      border-radius: 20px;
+      font-size: 40px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+      cursor: pointer;
+    }
+
+    .game-row {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 11px 13px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+      cursor: pointer;
+      transition: transform 0.12s;
+    }
+
+    .game-row:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--accent-blue);
+      color: #ffffff;
+      border: none;
+      padding: 13px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      background: rgba(37, 99, 235, 0.09);
+      color: var(--accent-blue);
+      border: none;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .ios-input, .ios-textarea, .ios-select {
+      width: 100%;
+      padding: 11px 13px;
+      border-radius: 12px;
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      color: var(--ios-text);
+      font-size: 14px;
+    }
+
+    .ios-input.error {
+      border-color: var(--accent-red);
+      background: #fef2f2;
+    }
+
+    .chip-row {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .chip {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      background: #e2e8f0;
+      color: #334155;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .chip.active {
+      background: var(--accent-blue);
+      color: #ffffff;
+    }
+
+    /* Panel Explicativo de Arquitectura y Flujo (Derecha) */
+    .flow-inspector {
+      width: 390px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tag-pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.6px;
+    }
+
+    .tag-purple {
+      background: rgba(139, 92, 246, 0.18);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.4);
+    }
+
+    .tag-green {
+      background: rgba(16, 185, 129, 0.16);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .tag-red {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .decision-diamond {
+      background: rgba(139, 92, 246, 0.12);
+      border: 1.5px solid rgba(139, 92, 246, 0.45);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .code-snippet {
+      background: #080f1d;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11.5px;
+      color: #93c5fd;
+      overflow-x: auto;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar de las 13 Escenas del Storyboard -->
+  <aside class="lab-sidebar">
+    <div class="brand-header">
+      <h1><span class="brand-badge">GR</span> GameRev</h1>
+      <div class="brand-sub">Storyboard de Programación · v1.0</div>
+    </div>
+
+    <div class="scene-list" id="sceneList"></div>
+
+    <div class="sidebar-footer">
+      <strong>iOS · SwiftUI + HTML</strong><br />
+      Lab iOS Ago-Dic 2026 · Equipo 6<br />
+      Prof. Azael Flores
+    </div>
+  </aside>
+
+  <!-- Área de Trabajo Interactiva -->
+  <main class="workspace">
+    <header class="topbar">
+      <div class="scene-header-info">
+        <div class="scene-circle" id="sceneNumberBadge">01</div>
+        <div class="scene-meta">
+          <h2 id="sceneTitle">Inicio de la aplicación</h2>
+          <p id="sceneSubtitle">El sistema determina la ruta inicial antes de presentar contenido.</p>
+        </div>
+      </div>
+
+      <div class="device-controls">
+        <button class="pill-toggle active" id="btnDeviceIphone" onclick="setDeviceMode('iphone')">📱 iPhone (TabView)</button>
+        <button class="pill-toggle" id="btnDeviceMac" onclick="setDeviceMode('mac')">💻 MacBook (SplitView)</button>
+        <button class="pill-toggle warn" id="btnSimNetError" onclick="toggleNetworkError()">⚡ Simular Error IGDB</button>
+        <button class="pill-toggle" onclick="resetDemoState()">↺ Restaurar Datos</button>
+      </div>
+    </header>
+
+    <section class="stage" id="stageContainer"></section>
+  </main>
+
+  <script>
+    // ============================================================================
+    // DATOS SEMILLA Y ESTADO REACTIVO (IDÉNTICO A AppStateStore.swift)
+    // ============================================================================
+    const SCENES = [
+      { id: 1, num: "01", short: "Inicio", title: "Inicio de la aplicación", sub: "ESCENA 1 · ARRANQUE · El sistema determina la ruta inicial antes de presentar contenido." },
+      { id: 2, num: "02", short: "Menú", title: "Menú principal", sub: "ESCENA 2 · NAVEGACIÓN ADAPTATIVA · TabView en iPhone y NavigationSplitView en MacBook." },
+      { id: 3, num: "03", short: "Catálogo", title: "Catálogo y consulta a IGDB", sub: "ESCENA 3 · DATOS EXTERNOS · La interfaz traduce una búsqueda en una solicitud externa." },
+      { id: 4, num: "04", short: "Videojuego", title: "Ficha del videojuego", sub: "ESCENA 4 · DETALLE · Superficie rica en contenido que concentra las 4 acciones conectadas." },
+      { id: 5, num: "05", short: "Autenticación", title: "Acción protegida y recuperación", sub: "ESCENA 5 · AUTENTICACIÓN · La intención (pendingAction) no se pierde ante una barrera de acceso." },
+      { id: 6, num: "06", short: "Diario", title: "Consulta y filtrado del diario", sub: "ESCENA 6 · COLECCIÓN · Contempla una colección poblada con filtros o un estado vacío." },
+      { id: 7, num: "07", short: "Categorías", title: "Categorías personalizadas", sub: "ESCENA 7 · ORGANIZACIÓN PERSONAL · Validación de nombre único, persistencia y actualización." },
+      { id: 8, num: "08", short: "Reseñas", title: "Mini-reseñas y comentarios", sub: "ESCENA 8 · CONTENIDO SOCIAL · Publicaciones relacionadas protegidas por validación de contenido." },
+      { id: 9, num: "09", short: "Creador", title: "Consultar perfil de creador", sub: "ESCENA 9 · ACCESO PÚBLICO · El perfil se lee sin sesión y el contacto abre un destino externo." },
+      { id: 10, num: "10", short: "Mi perfil", title: "Mi perfil y edición condicional", sub: "ESCENA 10 · CUENTA · Solo el perfil propio ofrece edición y el tipo elegido modifica el formulario." },
+      { id: 11, num: "11", short: "Permisos", title: "Control de permisos", sub: "ESCENA 11 · AUTORIZACIÓN · currentUser.id debe coincidir con profile.ownerId." },
+      { id: 12, num: "12", short: "Errores", title: "Manejo de errores y recuperación", sub: "ESCENA 12 · RESILIENCIA · Cada fallo comunica qué ocurrió y ofrece una salida contextual." },
+      { id: 13, num: "13", short: "Sistema", title: "Mapa general del sistema", sub: "ESCENA 13 · ARQUITECTURA DE FLUJO · Vista consolidada de rutas, módulos y puntos de conexión." }
+    ];
+
+    const DEFAULT_STATE = {
+      currentScene: 1,
+      deviceMode: "iphone", // "iphone" | "mac"
+      activeTab: "home", // "home" | "catalog" | "diary" | "reviews" | "profile"
+      splashPhase: false,
+      currentUser: {
+        id: "mauro-1",
+        ownerId: "mauro-1",
+        name: "Mauro Barcenas",
+        username: "mauro.b",
+        email: "mauro@gamerev.app",
+        initials: "AR",
+        bio: "Cazador de indies y mundos imposibles.",
+        profileType: "Jugador", // "Jugador" | "Creador"
+        studioOrProject: "Moonlit Studio",
+        creatorRole: "Artista conceptual",
+        trajectory: "Entornos y personajes",
+        contactURL: "https://portfolio.example"
+      },
+      isReaderMode: false,
+      pendingAction: null,
+      authGateVisible: false,
+      authFormMode: null, // null | "login" | "register"
+      authErrorMsg: null,
+
+      // Catálogo e IGDB
+      searchQuery: "",
+      genreFilter: "Todos",
+      simulateNetworkError: false,
+      selectedGameId: "hk",
+
+      // Diario y Categorías
+      diaryStatusFilter: "Jugando",
+      diaryCategoryFilter: "Todas",
+      simulateEmptyDiary: false,
+      showCategoryModal: false,
+      creatingCategoryMode: false,
+      newCategoryName: "Indies favoritos",
+      categoryError: null,
+      showDiaryEntryModal: false,
+
+      // Reseñas y Comentarios
+      selectedReviewId: "rev-1",
+      showReviewDetail: false,
+      showNewReviewModal: false,
+      newReviewText: "",
+      newReviewError: null,
+      newCommentText: "",
+      newCommentError: null,
+
+      // Perfiles
+      viewingPublicProfileId: "tc", // "tc" (Team Cherry) | "mr" (Marina Ríos)
+      isEditingOwnProfile: false,
+      unauthorizedTriggered: false,
+
+      games: [
+        { id: "hk", code: "HK", title: "Hollow Knight", genres: ["Acción", "Aventura", "Indie"], year: 2017, rating: 4.7, mode: "1 jugador", developer: "Team Cherry", creatorId: "tc", synopsis: "Explora un vasto reino en ruinas, descubre secretos y enfrenta criaturas. Forja tu propio camino en Hallownest, un reino vasto y olvidado." },
+        { id: "ha", code: "HA", title: "Hades II", genres: ["Aventura", "Acción", "Roguelike"], year: 2024, rating: 4.8, mode: "1 jugador", developer: "Supergiant Games", creatorId: "tc", synopsis: "Batalla más allá del Inframundo usando hechicería oscura para enfrentarte al Titán del Tiempo." },
+        { id: "ce", code: "CE", title: "Celeste", genres: ["Aventura", "Plataformas", "Indie"], year: 2018, rating: 4.9, mode: "1 jugador", developer: "Maddy Makes Games", creatorId: "mr", synopsis: "Ayuda a Madeline a sobrevivir a sus demonios internos en su viaje hasta la cima de la montaña Celeste." },
+        { id: "si", code: "SI", title: "Silksong", genres: ["Acción", "Aventura", "Indie"], year: 2025, rating: 4.9, mode: "1 jugador", developer: "Team Cherry", creatorId: "tc", synopsis: "Descubre un vasto reino embrujado protagonizado por Hornet, princesa protectora de Hallownest." },
+        { id: "ho", code: "HO", title: "Hollow Knight: Voidheart", genres: ["Acción", "Aventura", "Indie"], year: 2018, rating: 4.8, mode: "1 jugador", developer: "Team Cherry", creatorId: "tc", synopsis: "Edición expandida que incluye la aventura original y los cuatro paquetes de contenido de Hallownest." },
+        { id: "se", code: "SE", title: "Sea of Stars", genres: ["RPG", "Aventura", "Indie"], year: 2023, rating: 4.6, mode: "1 jugador", developer: "Sabotage Studio", creatorId: "mr", synopsis: "Un RPG por turnos inspirado en los clásicos que cuenta la historia de dos Hijos del Solsticio." }
+      ],
+
+      categories: [
+        { id: "cat-1", name: "Indies favoritos", color: "#2563eb", count: 4 },
+        { id: "cat-2", name: "Roguelikes", color: "#9333ea", count: 3 }
+      ],
+
+      diaryEntries: [
+        { id: "d-1", gameId: "hk", status: "Jugando", category: "Indies favoritos", note: "Explorando Ciudad de Lágrimas." },
+        { id: "d-2", gameId: "ha", status: "Jugando", category: "Roguelikes", note: "Dominando los encantamientos nocturnos." },
+        { id: "d-3", gameId: "se", status: "Jugando", category: "Indies favoritos", note: "Banda sonora inolvidable." },
+        { id: "d-4", gameId: "ce", status: "Completado", category: "Indies favoritos", note: "Todas las caras B completadas." }
+      ],
+
+      reviews: [
+        { id: "rev-1", gameId: "ce", author: "marina.codes", rating: 4.9, text: "Una experiencia precisa y emotiva. Cada nivel cuenta algo." },
+        { id: "rev-2", gameId: "hk", author: "marina.codes", rating: 4.8, text: "Un mundo inolvidable. Preciso e inolvidable." }
+      ],
+
+      comments: [
+        { id: "com-1", reviewId: "rev-1", author: "mauro.b", text: "La música también es increíble." }
+      ],
+
+      publicProfiles: {
+        tc: {
+          id: "tc",
+          ownerId: "tc",
+          initials: "TC",
+          name: "Team Cherry",
+          badge: "CREADOR · ESTUDIO",
+          bio: "Desarrolladores independientes con base en Adelaida.",
+          trajectory: "Diseño, arte y desarrollo de mundos interactivos.",
+          works: ["Hollow Knight", "Silksong"],
+          contactURL: "https://www.teamcherry.com.au"
+        },
+        mr: {
+          id: "mr",
+          ownerId: "mr",
+          initials: "MR",
+          name: "Marina Ríos",
+          badge: "CREADORA · ILUSTRACIÓN",
+          bio: "Diseño personajes para mundos fantásticos.",
+          trajectory: "Dirección de arte y diseño de personajes para mundos fantásticos.",
+          works: ["Proyecto A", "Proyecto B"],
+          contactURL: "https://marinaríos.art.example"
+        }
+      }
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem("gamerev_lab_state_v1");
+        if (saved) {
+          return { ... JSON.parse(JSON.stringify(DEFAULT_STATE)), ...JSON.parse(saved) };
+        }
+      } catch (e) {}
+      return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem("gamerev_lab_state_v1", JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function resetDemoState() {
+      localStorage.removeItem("gamerev_lab_state_v1");
+      state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      selectScene(state.currentScene);
+    }
+
+    // ============================================================================
+    // NAVEGACIÓN ENTRE LAS 13 ESCENAS DEL STORYBOARD
+    // ============================================================================
+    function renderSidebar() {
+      const list = document.getElementById("sceneList");
+      list.innerHTML = SCENES.map(s => `
+        <button class="scene-btn ${state.currentScene === s.id ? 'active' : ''}" onclick="selectScene(${s.id})">
+          <span class="scene-num">${s.num}</span>
+          <span>${s.short}</span>
+        </button>
+      `).join("");
+    }
+
+    function selectScene(sceneId) {
+      state.currentScene = sceneId;
+      state.authGateVisible = false;
+      state.showCategoryModal = false;
+      state.showNewReviewModal = false;
+      state.showReviewDetail = false;
+      state.isEditingOwnProfile = false;
+      state.unauthorizedTriggered = false;
+
+      switch (sceneId) {
+        case 1:
+          state.activeTab = "home";
+          break;
+        case 2:
+          state.activeTab = "home";
+          break;
+        case 3:
+          state.activeTab = "catalog";
+          break;
+        case 4:
+          state.activeTab = "catalog";
+          state.selectedGameId = "hk";
+          break;
+        case 5:
+          state.currentUser = null;
+          state.isReaderMode = true;
+          state.pendingAction = "Guardar Hollow Knight";
+          state.authGateVisible = true;
+          break;
+        case 6:
+          ensureLoggedIn();
+          state.activeTab = "diary";
+          break;
+        case 7:
+          ensureLoggedIn();
+          state.activeTab = "diary";
+          state.showCategoryModal = true;
+          state.creatingCategoryMode = true;
+          state.newCategoryName = "Indies favoritos";
+          state.categoryError = "Nombre duplicado";
+          break;
+        case 8:
+          state.activeTab = "reviews";
+          break;
+        case 9:
+          state.activeTab = "profile";
+          state.viewingPublicProfileId = "tc";
+          break;
+        case 10:
+          ensureLoggedIn();
+          state.activeTab = "profile";
+          state.viewingPublicProfileId = null;
+          state.isEditingOwnProfile = true;
+          state.currentUser.profileType = "Creador";
+          break;
+        case 11:
+          state.activeTab = "profile";
+          state.viewingPublicProfileId = "mr";
+          state.unauthorizedTriggered = true;
+          break;
+        case 12:
+        case 13:
+          break;
+      }
+
+      saveState();
+      renderAll();
+    }
+
+    function ensureLoggedIn() {
+      if (!state.currentUser) {
+        state.currentUser = JSON.parse(JSON.stringify(DEFAULT_STATE.currentUser));
+        state.isReaderMode = false;
+      }
+    }
+
+    function setDeviceMode(mode) {
+      state.deviceMode = mode;
+      document.getElementById("btnDeviceIphone").classList.toggle("active", mode === "iphone");
+      document.getElementById("btnDeviceMac").classList.toggle("active", mode === "mac");
+      renderAll();
+    }
+
+    function toggleNetworkError() {
+      state.simulateNetworkError = !state.simulateNetworkError;
+      if (state.simulateNetworkError) {
+        state.currentScene = 3;
+        state.activeTab = "catalog";
+      }
+      document.getElementById("btnSimNetError").classList.toggle("active", state.simulateNetworkError);
+      renderAll();
+    }
+
+    // ============================================================================
+    // RENDERIZADO GENERAL
+    // ============================================================================
+    function renderAll() {
+      renderSidebar();
+      const sceneMeta = SCENES.find(s => s.id === state.currentScene) || SCENES[0];
+      document.getElementById("sceneNumberBadge").textContent = sceneMeta.num;
+      document.getElementById("sceneTitle").textContent = sceneMeta.title;
+      document.getElementById("sceneSubtitle").textContent = sceneMeta.sub;
+      document.getElementById("btnSimNetError").classList.toggle("active", state.simulateNetworkError);
+
+      const stage = document.getElementById("stageContainer");
+
+      if (state.currentScene === 12) {
+        stage.innerHTML = renderScene12ErrorsOverview();
+        return;
+      }
+      if (state.currentScene === 13) {
+        stage.innerHTML = renderScene13ArchitectureMap();
+        return;
+      }
+
+      if (state.deviceMode === "mac") {
+        stage.innerHTML = renderMacBookFrame() + renderFlowInspectorPanel();
+      } else {
+        stage.innerHTML = renderIphoneFrame() + renderFlowInspectorPanel();
+      }
+    }
+
+    // ============================================================================
+    // PANTALLAS DENTRO DEL IPHONE
+    // ============================================================================
+    function renderIphoneFrame() {
+      let navTitle = "GameRev";
+      let leftBtn = `<button class="ios-nav-btn" onclick="goBackInPhone()">‹</button>`;
+      let bodyHTML = "";
+
+      if (state.authGateVisible) {
+        navTitle = "Acceso requerido";
+        bodyHTML = renderProtectedAuthGateContent();
+      } else if (state.currentScene === 1 && !state.currentUser && !state.isReaderMode) {
+        navTitle = "Bienvenido";
+        bodyHTML = renderWelcomeScreenContent();
+      } else if (state.currentScene === 4) {
+        const g = getGame(state.selectedGameId);
+        navTitle = g.title;
+        bodyHTML = renderGameDetailContent(g);
+      } else if (state.showCategoryModal) {
+        navTitle = state.creatingCategoryMode ? "Nueva categoría" : "Categorías";
+        bodyHTML = renderCategoriesContent();
+      } else if (state.showNewReviewModal) {
+        navTitle = "Nueva reseña";
+        bodyHTML = renderNewReviewModalContent();
+      } else if (state.showReviewDetail) {
+        navTitle = "Detalle de reseña";
+        bodyHTML = renderReviewDetailContent();
+      } else if (state.isEditingOwnProfile) {
+        navTitle = "Editar perfil";
+        bodyHTML = renderEditProfileContent();
+      } else if (state.activeTab === "profile" && state.viewingPublicProfileId) {
+        navTitle = "Perfil público";
+        bodyHTML = renderPublicCreatorProfileContent(state.viewingPublicProfileId);
+      } else {
+        switch (state.activeTab) {
+          case "home":
+            navTitle = "Inicio";
+            bodyHTML = renderHomeTabContent();
+            break;
+          case "catalog":
+            navTitle = "Catálogo";
+            bodyHTML = renderCatalogTabContent();
+            break;
+          case "diary":
+            navTitle = "Mi diario";
+            bodyHTML = renderDiaryTabContent();
+            break;
+          case "reviews":
+            navTitle = "Reseñas";
+            bodyHTML = renderReviewsTabContent();
+            break;
+          case "profile":
+            navTitle = "Mi perfil";
+            bodyHTML = renderMyProfileTabContent();
+            break;
+        }
+      }
+
+      return `
+        <div class="iphone-frame">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="dynamic-island"></div>
+            <span>5G ▮</span>
+          </div>
+          <div class="ios-navbar">
+            ${leftBtn}
+            <span class="ios-nav-title">${navTitle}</span>
+            <button class="ios-nav-btn" onclick="toggleSessionQuick()">•••</button>
+          </div>
+          <div class="ios-body">
+            ${bodyHTML}
+          </div>
+          <div class="ios-tabbar">
+            <button class="tab-btn ${state.activeTab === 'home' ? 'active' : ''}" onclick="switchTab('home')">
+              <span class="tab-icon">⌂</span><span>Inicio</span>
+            </button>
+            <button class="tab-btn ${state.activeTab === 'catalog' ? 'active' : ''}" onclick="switchTab('catalog')">
+              <span class="tab-icon">⌕</span><span>Catálogo</span>
+            </button>
+            <button class="tab-btn ${state.activeTab === 'diary' ? 'active' : ''}" onclick="switchTab('diary')">
+              <span class="tab-icon">▤</span><span>Diario</span>
+            </button>
+            <button class="tab-btn ${state.activeTab === 'reviews' ? 'active' : ''}" onclick="switchTab('reviews')">
+              <span class="tab-icon">💬</span><span>Reseñas</span>
+            </button>
+            <button class="tab-btn ${state.activeTab === 'profile' ? 'active' : ''}" onclick="switchTab('profile')">
+              <span class="tab-icon">👤</span><span>Perfil</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================================================
+    // PANTALLAS INDIVIDUALES
+    // ============================================================================
+    function renderWelcomeScreenContent() {
+      return `
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;padding-top:26px;">
+          <div class="cover-box" style="width:78px;height:78px;border-radius:20px;font-size:24px;color:#f59e0b;">GR</div>
+          <h3 style="font-size:24px;font-weight:800;line-height:1.2;">Tu mundo de<br/>videojuegos</h3>
+          <p style="font-size:13px;color:var(--ios-muted);">Define si entras como persona lectora o inicias un flujo de autenticación.</p>
+          <button class="btn-primary" onclick="enterReaderMode()">Entrar como lector</button>
+          <button class="btn-secondary" onclick="loginAsMauro()">Iniciar sesión (Mauro)</button>
+          <button style="background:none;border:none;color:var(--accent-blue);font-weight:600;font-size:14px;cursor:pointer;padding:8px;" onclick="loginAsMauro()">Crear cuenta</button>
+        </div>
+      `;
+    }
+
+    function renderHomeTabContent() {
+      const userName = state.currentUser ? state.currentUser.name.split(" ")[0] : "Lector";
+      const hk = getGame("hk");
+      const others = state.games.filter(g => g.id !== "hk").slice(0, 2);
+
+      return `
+        <div>
+          <div style="font-size:10px;font-weight:800;color:var(--ios-muted);letter-spacing:0.8px;">PARA TI</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3 style="font-size:24px;font-weight:800;">Hola, ${userName}</h3>
+            ${!state.currentUser ? `<button onclick="openWelcome()" style="font-size:11px;padding:5px 10px;border-radius:99px;border:none;background:#dbeafe;color:#1d4ed8;font-weight:700;cursor:pointer;">Acceder</button>` : ''}
+          </div>
+        </div>
+
+        <div class="cover-box hero-cover" onclick="openGameDetail('hk')">
+          HK
+        </div>
+
+        <div style="font-size:10px;font-weight:800;color:var(--ios-muted);letter-spacing:0.8px;margin-top:4px;">JUEGOS DESTACADOS</div>
+        ${others.map(g => `
+          <div class="game-row" onclick="openGameDetail('${g.id}')">
+            <div class="cover-box" style="width:42px;height:42px;font-size:13px;">${g.code}</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;">${g.title}</div>
+              <div style="font-size:12px;color:var(--ios-muted);">${g.genres[0]} · ${g.year}</div>
+            </div>
+            <span style="font-size:12px;color:#f59e0b;font-weight:700;">★ ${g.rating}</span>
+          </div>
+        `).join("")}
+
+        ${state.currentUser ? `
+          <div style="background:#dcfce7;color:#15803d;padding:11px 14px;border-radius:12px;font-size:12px;font-weight:700;text-align:center;">
+            ✓ Sesión restaurada de forma segura
+          </div>
+        ` : `
+          <div style="background:#e0f2fe;color:#0369a1;padding:11px 14px;border-radius:12px;font-size:12px;font-weight:600;text-align:center;">
+            Modo lector activo · Consulta pública habilitada
+          </div>
+        `}
+      `;
+    }
+
+    function renderCatalogTabContent() {
+      const q = state.searchQuery.trim().toLowerCase();
+      const filtered = state.games.filter(g => {
+        const matchQ = !q || g.title.toLowerCase().includes(q) || g.developer.toLowerCase().includes(q);
+        const matchGenre = state.genreFilter === "Todos" || g.genres.includes(state.genreFilter);
+        return matchQ && matchGenre;
+      });
+
+      return `
+        <input class="ios-input" placeholder="🔍 Hollow Knight, Celeste..." value="${state.searchQuery}" oninput="updateSearch(this.value)" />
+        <div class="chip-row">
+          ${["Todos", "Acción", "Aventura", "Indie", "RPG"].map(gen => `
+            <button class="chip ${state.genreFilter === gen ? 'active' : ''}" onclick="setGenreFilter('${gen}')">${gen === "Todos" ? "Género" : gen}</button>
+          `).join("")}
+          <button class="chip" onclick="toggleNetworkError()">⚡ Fallo Red</button>
+        </div>
+
+        ${state.simulateNetworkError ? `
+          <div style="background:#fff;border-radius:18px;padding:24px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:12px;">
+            <div style="width:48px;height:48px;border-radius:50%;border:2px solid #fca5a5;color:#ef4444;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;">!</div>
+            <div style="font-size:17px;font-weight:800;">No pudimos conectar</div>
+            <div style="font-size:12px;color:var(--ios-muted);">Comprueba tu conexión y vuelve a intentarlo</div>
+            <button class="btn-primary" onclick="toggleNetworkError()">Reintentar</button>
+          </div>
+        ` : filtered.length === 0 ? `
+          <div style="background:#fff;border-radius:18px;padding:22px 16px;text-align:center;display:flex;flex-direction:column;gap:10px;margin-top:12px;">
+            <div style="font-size:16px;font-weight:800;">No encontramos coincidencias</div>
+            <div style="font-size:12px;color:var(--ios-muted);">Ajusta los filtros o prueba otro término.</div>
+            <button class="btn-secondary" onclick="clearSearch()">Modificar búsqueda</button>
+          </div>
+        ` : `
+          <div style="font-size:10px;font-weight:800;color:var(--ios-muted);letter-spacing:0.8px;">RESULTADOS (${filtered.length})</div>
+          ${filtered.map(g => `
+            <div class="game-row" onclick="openGameDetail('${g.id}')">
+              <div class="cover-box" style="width:42px;height:42px;font-size:13px;">${g.code}</div>
+              <div style="flex:1;">
+                <div style="font-size:14px;font-weight:700;">${g.title}</div>
+                <div style="font-size:12px;color:var(--ios-muted);">${g.genres.join(" · ")} · ${g.year}</div>
+              </div>
+              <span style="font-size:12px;color:#64748b;">›</span>
+            </div>
+          `).join("")}
+        `}
+      `;
+    }
+
+    function renderGameDetailContent(g) {
+      const gameReviews = state.reviews.filter(r => r.gameId === g.id);
+      return `
+        <div class="cover-box hero-cover" style="height:140px;">${g.code}</div>
+        <div>
+          <h3 style="font-size:22px;font-weight:800;">${g.title}</h3>
+          <div style="font-size:12px;color:var(--ios-muted);margin-top:2px;">${g.genres.join(" · ")}</div>
+        </div>
+
+        <div style="display:flex;gap:26px;padding:6px 0;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;">
+          <div>
+            <div style="font-size:14px;font-weight:800;">${g.year}</div>
+            <div style="font-size:11px;color:var(--ios-muted);">Año</div>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:800;color:#d97706;">${g.rating} / 5</div>
+            <div style="font-size:11px;color:var(--ios-muted);">Valoración</div>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:800;">${g.developer}</div>
+            <div style="font-size:11px;color:var(--ios-muted);">Estudio</div>
+          </div>
+        </div>
+
+        <p style="font-size:13px;color:#475569;line-height:1.45;">${g.synopsis}</p>
+
+        <div class="game-row" onclick="openCreatorProfile('${g.creatorId}')">
+          <div class="cover-box" style="width:36px;height:36px;border-radius:50%;font-size:12px;color:#f59e0b;">${g.creatorId === 'tc' ? 'TC' : 'MR'}</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;">${g.developer}</div>
+            <div style="font-size:11px;color:var(--ios-muted);">Estudio creador · Ver portafolio</div>
+          </div>
+          <span>→</span>
+        </div>
+
+        <button class="btn-primary" onclick="triggerSaveToDiary('${g.id}')">Guardar en mi diario</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-secondary" onclick="triggerWriteReview('${g.id}')">Escribir reseña</button>
+          <button class="btn-secondary" onclick="switchTab('reviews')">Leer reseñas</button>
+        </div>
+
+        <div style="font-size:10px;font-weight:800;color:var(--ios-muted);margin-top:4px;">RESEÑAS</div>
+        ${gameReviews.map(r => `
+          <div style="background:#fff;padding:10px 12px;border-radius:12px;font-size:12px;color:#475569;">
+            <strong>@${r.author}:</strong> "${r.text}"
+          </div>
+        `).join("")}
+      `;
+    }
+
+    function renderProtectedAuthGateContent() {
+      return `
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding-top:16px;">
+          <div class="cover-box" style="width:72px;height:72px;border-radius:20px;font-size:22px;color:#f59e0b;">GR</div>
+          <h3 style="font-size:22px;font-weight:800;">Guarda tu progreso</h3>
+          <p style="font-size:13px;color:var(--ios-muted);">Inicia sesión para añadir este juego a tu diario o publicar contenido.</p>
+
+          <div style="background:#dcfce7;border:1px solid #86efac;color:#166534;padding:10px 12px;border-radius:12px;font-size:11px;font-family:monospace;width:100%;">
+            pendingAction = "${state.pendingAction || 'Guardar Hollow Knight'}"
+          </div>
+
+          <button class="btn-primary" onclick="completeProtectedAuth()">Iniciar sesión y retomar acción</button>
+          <button class="btn-secondary" onclick="completeProtectedAuth()">Crear cuenta</button>
+          <button style="background:none;border:none;color:#64748b;font-weight:600;font-size:13px;cursor:pointer;padding:6px;" onclick="cancelProtectedAuth()">Cancelar (descarta acción)</button>
+        </div>
+      `;
+    }
+
+    function renderDiaryTabContent() {
+      if (!state.currentUser) {
+        return `
+          <div style="text-align:center;padding:32px 12px;display:flex;flex-direction:column;gap:12px;">
+            <h3 style="font-size:19px;font-weight:800;">El diario requiere cuenta</h3>
+            <p style="font-size:13px;color:var(--ios-muted);">Autentícate para organizar tus videojuegos por estado y categorías personalizadas.</p>
+            <button class="btn-primary" onclick="triggerProtectedDiary()">Iniciar sesión</button>
+          </div>
+        `;
+      }
+
+      if (state.simulateEmptyDiary || state.diaryEntries.length === 0) {
+        return `
+          <div style="text-align:center;padding:42px 16px;display:flex;flex-direction:column;align-items:center;gap:12px;">
+            <div style="width:52px;height:52px;border-radius:14px;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:22px;">▤</div>
+            <h3 style="font-size:19px;font-weight:800;">Tu diario está vacío</h3>
+            <p style="font-size:12px;color:var(--ios-muted);">Busca un videojuego y registra tu primera aventura</p>
+            <button class="btn-primary" onclick="state.simulateEmptyDiary=false;switchTab('catalog')">Buscar videojuegos</button>
+          </div>
+        `;
+      }
+
+      const filtered = state.diaryEntries.filter(e => {
+        const mStatus = state.diaryStatusFilter === "Todos" || e.status === state.diaryStatusFilter;
+        const mCat = state.diaryCategoryFilter === "Todas" || e.category === state.diaryCategoryFilter;
+        return mStatus && mCat;
+      });
+
+      return `
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+          <div>
+            <div style="font-size:10px;font-weight:800;color:var(--ios-muted);">TU COLECCIÓN</div>
+            <h3 style="font-size:24px;font-weight:800;">12 videojuegos</h3>
+          </div>
+          <button onclick="openCategoriesModal()" style="border:none;background:#dbeafe;color:#1d4ed8;padding:6px 10px;border-radius:99px;font-size:11px;font-weight:700;cursor:pointer;">+ Categorías</button>
+        </div>
+
+        <div class="chip-row">
+          ${["Jugando", "Completado", "Pendiente", "Abandonado", "Rejugando", "Todos"].map(st => `
+            <button class="chip ${state.diaryStatusFilter === st ? 'active' : ''}" onclick="setDiaryStatus('${st}')">${st}</button>
+          `).join("")}
+        </div>
+
+        <div class="chip-row">
+          <button class="chip ${state.diaryCategoryFilter === 'Todas' ? 'active' : ''}" onclick="setDiaryCat('Todas')">Categoría: Todas</button>
+          ${state.categories.map(c => `
+            <button class="chip ${state.diaryCategoryFilter === c.name ? 'active' : ''}" onclick="setDiaryCat('${c.name}')">${c.name}</button>
+          `).join("")}
+          <button class="chip" onclick="state.simulateEmptyDiary=!state.simulateEmptyDiary;renderAll()">Estado vacío</button>
+        </div>
+
+        ${filtered.map(e => {
+          const g = getGame(e.gameId);
+          return `
+            <div class="game-row" onclick="cycleEntryStatus('${e.id}')">
+              <div class="cover-box" style="width:42px;height:42px;font-size:13px;">${g.code}</div>
+              <div style="flex:1;">
+                <div style="font-size:14px;font-weight:700;">${g.title}</div>
+                <div style="font-size:12px;color:#2563eb;font-weight:600;">${e.status} · ${e.category}</div>
+              </div>
+              <span style="font-size:10px;color:#64748b;">Cambiar ↻</span>
+            </div>
+          `;
+        }).join("")}
+      `;
+    }
+
+    function renderCategoriesContent() {
+      return `
+        <div>
+          <div style="font-size:10px;font-weight:800;color:var(--ios-muted);">ORGANIZA TU DIARIO</div>
+          <h3 style="font-size:22px;font-weight:800;">${state.creatingCategoryMode ? 'Crear categoría' : 'Mis categorías'}</h3>
+        </div>
+
+        ${!state.creatingCategoryMode ? `
+          ${state.categories.map(c => `
+            <div class="game-row">
+              <span style="width:10px;height:10px;border-radius:50%;background:${c.color};"></span>
+              <span style="flex:1;font-size:14px;font-weight:600;">${c.name}</span>
+              <span style="font-size:13px;font-weight:700;color:#64748b;">${c.count}</span>
+            </div>
+          `).join("")}
+          <button class="btn-primary" onclick="state.creatingCategoryMode=true;state.newCategoryName='';state.categoryError=null;renderAll()">+ Nueva categoría</button>
+          <button class="btn-secondary" onclick="state.showCategoryModal=false;renderAll()">Volver al diario</button>
+        ` : `
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label style="font-size:11px;font-weight:700;color:var(--ios-muted);">Nombre de categoría</label>
+            <input class="ios-input ${state.categoryError ? 'error' : ''}" value="${state.newCategoryName}" oninput="updateCategoryInput(this.value)" placeholder="Ej. Metroidvanias" />
+            ${state.categoryError ? `
+              <div style="font-size:11px;color:#ef4444;">Esta categoría ya existe o es inválida</div>
+              <div style="font-size:13px;font-weight:700;color:#ef4444;margin-top:4px;">× ${state.categoryError}</div>
+            ` : ''}
+          </div>
+          <button class="btn-primary" onclick="saveNewCategory()">Guardar categoría</button>
+          <button class="btn-secondary" onclick="state.creatingCategoryMode=false;renderAll()">Cancelar</button>
+        `}
+      `;
+    }
+
+    function renderReviewsTabContent() {
+      return `
+        ${state.reviews.map(r => {
+          const g = getGame(r.gameId);
+          const count = state.comments.filter(c => c.reviewId === r.id).length;
+          return `
+            <div style="background:#fff;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;cursor:pointer;" onclick="openReviewDetail('${r.id}')">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="cover-box" style="width:38px;height:38px;font-size:12px;">${g.code}</div>
+                <div>
+                  <div style="font-size:14px;font-weight:800;">${g.title}</div>
+                  <div style="font-size:11px;color:var(--ios-muted);">${g.genres[0]} · ${g.year}</div>
+                </div>
+              </div>
+              <div style="font-size:13px;font-weight:700;">${r.author}</div>
+              <div style="font-size:13px;color:#475569;">${r.text}</div>
+              <div style="font-size:12px;color:#2563eb;font-weight:700;">${count} comentario${count === 1 ? '' : 's'} ›</div>
+            </div>
+          `;
+        }).join("")}
+
+        <button class="btn-primary" onclick="triggerWriteReview('ce')">Escribir reseña</button>
+      `;
+    }
+
+    function renderNewReviewModalContent() {
+      const g = getGame(state.selectedGameId || "ce");
+      return `
+        <div class="game-row">
+          <div class="cover-box" style="width:42px;height:42px;font-size:13px;">${g.code}</div>
+          <div>
+            <div style="font-size:15px;font-weight:800;">${g.title}</div>
+            <div style="font-size:12px;color:var(--ios-muted);">${g.genres[0]} · ${g.year}</div>
+          </div>
+        </div>
+
+        <label style="font-size:11px;font-weight:700;color:var(--ios-muted);">Tu mini-reseña</label>
+        <textarea class="ios-textarea ${state.newReviewError ? 'error' : ''}" rows="4" placeholder="Una experiencia precisa y emotiva..." oninput="state.newReviewText=this.value;state.newReviewError=null">${state.newReviewText}</textarea>
+        <div style="text-align:right;font-size:11px;color:var(--ios-muted);">${state.newReviewText.length} / 280</div>
+
+        ${state.newReviewError ? `<div style="color:#ef4444;font-size:12px;font-weight:700;">× ${state.newReviewError}</div>` : ''}
+
+        <button class="btn-primary" onclick="publishNewReview()">Publicar</button>
+        <button class="btn-secondary" onclick="state.showNewReviewModal=false;renderAll()">Cancelar</button>
+      `;
+    }
+
+    function renderReviewDetailContent() {
+      const r = state.reviews.find(x => x.id === state.selectedReviewId) || state.reviews[0];
+      const relComments = state.comments.filter(c => c.reviewId === r.id);
+
+      return `
+        <div style="background:#fff;padding:14px;border-radius:14px;border-left:4px solid #2563eb;">
+          <div style="font-size:13px;font-weight:800;">${r.author}</div>
+          <div style="font-size:13px;color:#475569;margin-top:4px;">${r.text}</div>
+        </div>
+
+        <div style="font-size:10px;font-weight:800;color:var(--ios-muted);">COMENTARIOS (${relComments.length})</div>
+        ${relComments.map(c => `
+          <div style="background:#fff;padding:12px;border-radius:12px;">
+            <div style="font-size:12px;font-weight:800;">${c.author}</div>
+            <div style="font-size:13px;color:#475569;margin-top:2px;">${c.text}</div>
+          </div>
+        `).join("")}
+
+        <input class="ios-input ${state.newCommentError ? 'error' : ''}" placeholder="Totalmente de acuerdo..." value="${state.newCommentText}" oninput="state.newCommentText=this.value;state.newCommentError=null" />
+        ${state.newCommentError ? `<div style="color:#ef4444;font-size:12px;font-weight:700;">× ${state.newCommentError}</div>` : ''}
+        <button class="btn-primary" onclick="submitReviewComment()">Comentar</button>
+      `;
+    }
+
+    function renderPublicCreatorProfileContent(profileId) {
+      const p = state.publicProfiles[profileId] || state.publicProfiles.tc;
+      return `
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding-top:6px;">
+          <div class="cover-box" style="width:68px;height:68px;border-radius:50%;font-size:20px;color:#f59e0b;">${p.initials}</div>
+          <h3 style="font-size:22px;font-weight:800;">${p.name}</h3>
+          <span style="background:#dbeafe;color:#1d4ed8;font-size:9px;font-weight:800;padding:4px 10px;border-radius:99px;">${p.badge}</span>
+          <p style="font-size:12px;color:var(--ios-muted);">${p.bio}</p>
+        </div>
+
+        <div>
+          <div style="font-size:13px;font-weight:800;">Trayectoria</div>
+          <p style="font-size:12px;color:var(--ios-muted);margin-top:3px;">${p.trajectory}</p>
+        </div>
+
+        <div>
+          <div style="font-size:13px;font-weight:800;margin-bottom:8px;">${profileId === 'mr' ? 'Portafolio' : 'Trabajos'}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            ${p.works.map(w => `
+              <div style="background:#0f172a;color:#fff;padding:12px;border-radius:10px;font-size:12px;font-weight:700;">${w}</div>
+            `).join("")}
+          </div>
+        </div>
+
+        <a href="${p.contactURL}" target="_blank" style="text-decoration:none;text-align:center;background:#dbeafe;color:#1d4ed8;padding:12px;border-radius:12px;font-size:13px;font-weight:700;">
+          Visitar sitio de contacto ↗
+        </a>
+
+        <button onclick="state.unauthorizedTriggered=true;renderAll()" style="padding:11px;border-radius:12px;border:1.5px dashed #94a3b8;background:transparent;color:#64748b;font-size:12px;font-weight:600;cursor:pointer;">
+          ✎ Intento de editar ruta (Probar Escena 11)
+        </button>
+
+        ${state.unauthorizedTriggered ? `
+          <div style="background:#fef2f2;border:1px solid #fca5a5;color:#991b1b;padding:12px;border-radius:12px;font-size:12px;">
+            <strong>UNAUTHORIZED:</strong> No tienes permiso para modificar este perfil.<br/>
+            <span style="font-family:monospace;font-size:10px;">currentUser.id != profile.ownerId</span>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function renderMyProfileTabContent() {
+      if (!state.currentUser) {
+        return `
+          <div style="text-align:center;padding:30px 12px;display:flex;flex-direction:column;gap:12px;">
+            <h3 style="font-size:18px;font-weight:800;">"Mi perfil" requiere sesión</h3>
+            <button class="btn-primary" onclick="loginAsMauro()">Iniciar sesión como Mauro</button>
+            <button class="btn-secondary" onclick="openCreatorProfile('tc')">Ver perfil público de Team Cherry</button>
+          </div>
+        `;
+      }
+      const u = state.currentUser;
+      return `
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding-top:8px;">
+          <div class="cover-box" style="width:72px;height:72px;border-radius:50%;font-size:22px;color:#f59e0b;">${u.initials}</div>
+          <h3 style="font-size:22px;font-weight:800;">${u.name}</h3>
+          <span style="background:#dbeafe;color:#1d4ed8;font-size:9px;font-weight:800;padding:4px 10px;border-radius:99px;">${u.profileType.toUpperCase()}</span>
+          <p style="font-size:12px;color:var(--ios-muted);">${u.bio}</p>
+        </div>
+
+        <button class="btn-primary" onclick="state.isEditingOwnProfile=true;renderAll()">✎ Editar perfil</button>
+
+        <div style="display:flex;justify-content:space-around;background:#fff;padding:14px;border-radius:14px;text-align:center;">
+          <div onclick="switchTab('diary')" style="cursor:pointer;">
+            <div style="font-size:18px;font-weight:800;">12</div>
+            <div style="font-size:11px;color:var(--ios-muted);">Diario</div>
+          </div>
+          <div onclick="switchTab('reviews')" style="cursor:pointer;">
+            <div style="font-size:18px;font-weight:800;">8</div>
+            <div style="font-size:11px;color:var(--ios-muted);">Reseñas</div>
+          </div>
+        </div>
+
+        <div style="font-size:10px;font-weight:800;color:var(--ios-muted);">EXPLORAR PERFILES PÚBLICOS</div>
+        <div class="game-row" onclick="openCreatorProfile('tc')">
+          <div class="cover-box" style="width:36px;height:36px;border-radius:50%;font-size:12px;color:#f59e0b;">TC</div>
+          <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Team Cherry</div><div style="font-size:11px;color:var(--ios-muted);">Creador · Estudio</div></div>
+          <span>›</span>
+        </div>
+        <div class="game-row" onclick="openCreatorProfile('mr')">
+          <div class="cover-box" style="width:36px;height:36px;border-radius:50%;font-size:12px;color:#f59e0b;">MR</div>
+          <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Marina Ríos</div><div style="font-size:11px;color:var(--ios-muted);">Creadora · Ilustración</div></div>
+          <span>›</span>
+        </div>
+      `;
+    }
+
+    function renderEditProfileContent() {
+      const u = state.currentUser;
+      return `
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="font-size:11px;font-weight:700;color:var(--ios-muted);">Nombre</label>
+          <input class="ios-input" value="${u.name}" oninput="state.currentUser.name=this.value" />
+
+          <label style="font-size:11px;font-weight:700;color:var(--ios-muted);">Descripción</label>
+          <input class="ios-input" value="${u.bio}" oninput="state.currentUser.bio=this.value" />
+
+          <label style="font-size:10px;font-weight:800;color:var(--ios-muted);margin-top:4px;">TIPO DE PERFIL</label>
+          <div style="display:flex;gap:8px;">
+            <button class="chip ${u.profileType === 'Jugador' ? 'active' : ''}" style="flex:1;padding:10px;" onclick="state.currentUser.profileType='Jugador';renderAll()">Jugador</button>
+            <button class="chip ${u.profileType === 'Creador' ? 'active' : ''}" style="flex:1;padding:10px;" onclick="state.currentUser.profileType='Creador';renderAll()">Creador</button>
+          </div>
+
+          ${u.profileType === 'Creador' ? `
+            <div style="background:#dcfce7;color:#166534;font-size:10px;font-weight:800;padding:5px 10px;border-radius:8px;margin-top:4px;">
+              CAMBIO DE ESTADO · Campos adicionales para creadores
+            </div>
+            <label style="font-size:11px;font-weight:700;color:var(--ios-muted);">Estudio</label>
+            <input class="ios-input" value="${u.studioOrProject}" oninput="state.currentUser.studioOrProject=this.value" />
+            <label style="font-size:11px;font-weight:700;color:var(--ios-muted);">Rol</label>
+            <input class="ios-input" value="${u.creatorRole}" oninput="state.currentUser.creatorRole=this.value" />
+            <label style="font-size:11px;font-weight:700;color:var(--ios-muted);">Descripción de trabajo</label>
+            <input class="ios-input" value="${u.trajectory}" oninput="state.currentUser.trajectory=this.value" />
+            <label style="font-size:11px;font-weight:700;color:var(--ios-muted);">Enlace público</label>
+            <input class="ios-input" value="${u.contactURL}" oninput="state.currentUser.contactURL=this.value" />
+          ` : ''}
+
+          <button class="btn-primary" style="margin-top:8px;" onclick="state.isEditingOwnProfile=false;saveState();renderAll()">Guardar perfil y portafolio</button>
+        </div>
+      `;
+    }
+
+    // ============================================================================
+    // VISTA ADAPTATIVA MACBOOK (ESCENA 2 PÁG. 6 Y ESCENA 4 PÁG. 10)
+    // ============================================================================
+    function renderMacBookFrame() {
+      const g = getGame(state.selectedGameId || "hk");
+      const isDetail = state.currentScene === 4;
+
+      return `
+        <div class="macbook-frame">
+          <div class="mac-sidebar">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:0 8px;">
+              <span style="color:#f59e0b;font-weight:900;">GR</span>
+              <strong style="font-size:17px;">GameRev</strong>
+            </div>
+            <button class="mac-nav-item ${state.activeTab === 'home' ? 'active' : ''}" onclick="switchTab('home')">Inicio</button>
+            <button class="mac-nav-item ${state.activeTab === 'catalog' ? 'active' : ''}" onclick="switchTab('catalog')">Catálogo</button>
+            <button class="mac-nav-item ${state.activeTab === 'diary' ? 'active' : ''}" onclick="switchTab('diary')">Diario</button>
+            <button class="mac-nav-item ${state.activeTab === 'reviews' ? 'active' : ''}" onclick="switchTab('reviews')">Reseñas</button>
+            <button class="mac-nav-item ${state.activeTab === 'profile' ? 'active' : ''}" onclick="switchTab('profile')">Perfil</button>
+          </div>
+          <div class="mac-content">
+            ${isDetail ? `
+              <div style="display:flex;gap:28px;align-items:center;background:#17243f;padding:26px;border-radius:22px;">
+                <div class="cover-box" style="width:190px;height:230px;font-size:44px;border-radius:22px;">${g.code}</div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
+                  <div style="font-size:11px;font-weight:800;color:#60a5fa;">${g.developer.toUpperCase()} · ${g.year}</div>
+                  <h2 style="font-size:34px;font-weight:800;">${g.title}</h2>
+                  <div style="color:#94a3b8;font-size:14px;">${g.genres.join(" · ")}</div>
+                  <div style="display:flex;gap:28px;padding:10px 0;border-top:1px solid rgba(255,255,255,0.1);border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <div><strong>${g.rating}</strong><div style="font-size:11px;color:#94a3b8;">Valoración</div></div>
+                    <div><strong>${g.year}</strong><div style="font-size:11px;color:#94a3b8;">Lanzamiento</div></div>
+                    <div><strong>1 jugador</strong><div style="font-size:11px;color:#94a3b8;">Modo</div></div>
+                  </div>
+                  <p style="font-size:13px;color:#cbd5e1;">${g.synopsis}</p>
+                  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button class="pill-toggle active" onclick="triggerSaveToDiary('${g.id}')">Guardar en mi diario</button>
+                    <button class="pill-toggle" onclick="switchTab('reviews')">Leer reseñas</button>
+                    <button class="pill-toggle" onclick="triggerWriteReview('${g.id}')">Escribir reseña</button>
+                    <button class="pill-toggle" onclick="openCreatorProfile('${g.creatorId}')">Ver creador</button>
+                  </div>
+                </div>
+              </div>
+            ` : `
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                  <div style="font-size:10px;color:#94a3b8;font-weight:700;">BUENAS TARDES</div>
+                  <h2 style="font-size:28px;font-weight:800;">Hola, Mauro</h2>
+                </div>
+                <input placeholder="Buscar videojuegos..." style="background:#1e293b;border:1px solid #334155;color:#fff;padding:9px 14px;border-radius:10px;width:220px;" oninput="updateSearch(this.value);switchTab('catalog')" />
+              </div>
+
+              <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px;">
+                <div style="background:linear-gradient(135deg,#172554,#0f172a);padding:22px;border-radius:20px;display:flex;gap:20px;align-items:center;">
+                  <div class="cover-box" style="width:105px;height:130px;font-size:30px;">HK</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+                    <span style="font-size:10px;font-weight:800;color:#60a5fa;">JUEGO DESTACADO</span>
+                    <h3 style="font-size:24px;font-weight:800;">Hollow Knight</h3>
+                    <p style="font-size:13px;color:#cbd5e1;">Explora Hallownest y registra tu aventura.</p>
+                    <button class="pill-toggle active" onclick="openGameDetail('hk')">Ver ficha</button>
+                  </div>
+                </div>
+
+                <div style="background:#17243f;padding:20px;border-radius:20px;display:flex;flex-direction:column;gap:10px;">
+                  <h3 style="font-size:19px;font-weight:800;">Reseñas recientes</h3>
+                  <p style="font-size:13px;color:#cbd5e1;">"Preciso e inolvidable."</p>
+                  <span style="font-size:12px;color:#60a5fa;">marina.codes</span>
+                </div>
+              </div>
+
+              <div>
+                <div style="font-size:10px;font-weight:800;color:#94a3b8;margin-bottom:10px;">ÚLTIMOS CONSULTADOS</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                  ${["ha", "ce", "se"].map(id => {
+                    const item = getGame(id);
+                    return `
+                      <div onclick="openGameDetail('${item.id}')" style="background:#f8fafc;color:#0f172a;padding:12px;border-radius:14px;display:flex;align-items:center;gap:10px;cursor:pointer;">
+                        <div class="cover-box" style="width:38px;height:38px;font-size:12px;">${item.code}</div>
+                        <div><strong style="font-size:13px;">${item.title}</strong><div style="font-size:11px;color:#64748b;">${item.genres[0]} · ${item.year}</div></div>
+                      </div>
+                    `;
+                  }).join("")}
+                </div>
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================================================
+    // PANEL DE LÓGICA DE FLUJO Y CÓDIGO SWIFTUI (DERECHA)
+    // ============================================================================
+    function renderFlowInspectorPanel() {
+      return `
+        <aside class="flow-inspector">
+          <div>
+            <span class="tag-pill tag-purple">DECISIÓN DEL SISTEMA · ESCENA ${String(state.currentScene).padStart(2, '0')}</span>
+            <h3 style="font-size:17px;font-weight:700;margin-top:8px;"> Estado en tiempo real</h3>
+          </div>
+
+          <div class="decision-diamond">
+            <div style="font-size:12px;color:#c4b5fd;font-weight:700;">¿Sesión activa?</div>
+            <div style="font-size:15px;font-weight:800;margin-top:4px;color:${state.currentUser ? '#6ee7b7' : '#fca5a5'};">
+              ${state.currentUser ? `SÍ · ${state.currentUser.name} (${state.currentUser.profileType})` : 'NO · Modo Lector Público'}
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--text-muted);">
+            <div><strong>pendingAction:</strong> <code style="color:#6ee7b7;">${state.pendingAction || "nil"}</code></div>
+            <div><strong>Archivo SwiftUI:</strong> <code style="color:#93c5fd;">${getSwiftFileForScene(state.currentScene)}</code></div>
+          </div>
+
+          <div class="code-snippet">${getSwiftSnippetForScene(state.currentScene)}</div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="pill-toggle" onclick="toggleSessionQuick()">
+              ${state.currentUser ? 'Cerrar sesión (Probar Lector)' : 'Iniciar sesión (Mauro)'}
+            </button>
+          </div>
+        </aside>
+      `;
+    }
+
+    function renderScene12ErrorsOverview() {
+      const cards = [
+        { tag: "CONNECTION_ERROR", icon: "!", title: "No fue posible conectar con el catálogo.", sub: "Comprueba tu conexión e inténtalo de nuevo.", btn: "Reintentar", scene: 3 },
+        { tag: "EMPTY_RESULTS", icon: "0", title: "No encontramos coincidencias.", sub: "Ajusta los filtros o prueba otro término.", btn: "Modificar búsqueda", scene: 3 },
+        { tag: "AUTH_ERROR", icon: "!", title: "Correo o contraseña incorrectos.", sub: "El sistema conserva los datos seguros para corregir.", btn: "Revisar datos", scene: 5 },
+        { tag: "INVALID_FORM", icon: "!", title: "Revisa los campos indicados.", sub: "El sistema conserva los datos seguros para corregir.", btn: "Corregir campos", scene: 7 },
+        { tag: "UNAUTHORIZED", icon: "!", title: "No tienes permiso para modificar este perfil.", sub: "currentUser.id debe coincidir con profile.ownerId.", btn: "Volver al perfil", scene: 11 }
+      ];
+      return `
+        <div style="max-width:960px;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px;">
+          ${cards.map(c => `
+            <div style="background:var(--bg-panel);border:1px solid var(--border-subtle);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px;">
+              <span class="tag-pill ${c.icon === '0' ? 'tag-purple' : 'tag-red'}">${c.tag}</span>
+              <div style="font-size:18px;font-weight:800;">${c.title}</div>
+              <p style="font-size:13px;color:var(--text-muted);flex:1;">${c.sub}</p>
+              <button class="pill-toggle active" onclick="selectScene(${c.scene})">${c.btn} →</button>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderScene13ArchitectureMap() {
+      return `
+        <div style="max-width:860px;width:100%;background:var(--bg-panel);border:1px solid var(--border-subtle);border-radius:22px;padding:30px;text-align:center;display:flex;flex-direction:column;gap:18px;">
+          <h3 style="font-size:22px;font-weight:800;">Arquitectura Consolidada · iPhone (TabView) + MacBook (NavigationSplitView)</h3>
+          <p style="font-size:13px;color:var(--text-muted);">Haz clic en cualquier módulo para saltar directamente a su escena interactiva:</p>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+            <button class="pill-toggle active" onclick="selectScene(1)">01 · Inicio (Session Check)</button>
+            <span>↓</span>
+            <button class="pill-toggle active" onclick="selectScene(5)">02 · Autenticación (Registro · Login · Lector + pendingAction)</button>
+            <span>↓</span>
+            <button class="pill-toggle active" onclick="selectScene(2)">03 · Menú Principal Adaptativo (TabView / SplitView)</button>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;margin-top:10px;">
+              <div style="background:var(--bg-card);padding:16px;border-radius:14px;cursor:pointer;" onclick="selectScene(3)">
+                <strong>04 · Catálogo IGDB</strong><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Búsqueda, filtros y ficha externa</div>
+              </div>
+              <div style="background:var(--bg-card);padding:16px;border-radius:14px;cursor:pointer;" onclick="selectScene(6)">
+                <strong>06 · Mi Diario</strong><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Estados y categorías personalizadas</div>
+              </div>
+              <div style="background:var(--bg-card);padding:16px;border-radius:14px;cursor:pointer;" onclick="selectScene(9)">
+                <strong>09 · Perfiles y Portafolios</strong><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Público, Creador y Control de Permisos</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================================================
+    // ACCIONES DE USUARIO Y VALIDACIONES
+    // ============================================================================
+    function getGame(id) {
+      return state.games.find(g => g.id === id) || state.games[0];
+    }
+
+    function switchTab(tab) {
+      state.activeTab = tab;
+      state.authGateVisible = false;
+      state.showCategoryModal = false;
+      state.showNewReviewModal = false;
+      state.showReviewDetail = false;
+      state.isEditingOwnProfile = false;
+      if (tab === "profile") state.viewingPublicProfileId = null;
+      if (state.currentScene === 4 || state.currentScene === 12 || state.currentScene === 13) {
+        state.currentScene = 2;
+      }
+      renderAll();
+    }
+
+    function goBackInPhone() {
+      if (state.authGateVisible) { state.authGateVisible = false; }
+      else if (state.showCategoryModal) { state.showCategoryModal = false; }
+      else if (state.showNewReviewModal) { state.showNewReviewModal = false; }
+      else if (state.showReviewDetail) { state.showReviewDetail = false; }
+      else if (state.isEditingOwnProfile) { state.isEditingOwnProfile = false; }
+      else if (state.viewingPublicProfileId) { state.viewingPublicProfileId = null; }
+      else if (state.currentScene === 4) { state.currentScene = 3; state.activeTab = "catalog"; }
+      renderAll();
+    }
+
+    function openGameDetail(gameId) {
+      state.selectedGameId = gameId;
+      state.currentScene = 4;
+      renderAll();
+    }
+
+    function openCreatorProfile(creatorId) {
+      state.viewingPublicProfileId = creatorId;
+      state.activeTab = "profile";
+      state.currentScene = 9;
+      renderAll();
+    }
+
+    function updateSearch(val) {
+      state.searchQuery = val;
+      renderAll();
+    }
+
+    function setGenreFilter(gen) {
+      state.genreFilter = gen;
+      renderAll();
+    }
+
+    function clearSearch() {
+      state.searchQuery = "";
+      state.genreFilter = "Todos";
+      renderAll();
+    }
+
+    function triggerSaveToDiary(gameId) {
+      const g = getGame(gameId);
+      if (!state.currentUser) {
+        state.pendingAction = `Guardar ${g.title}`;
+        state.authGateVisible = true;
+        state.currentScene = 5;
+        renderAll();
+        return;
+      }
+      if (!state.diaryEntries.some(e => e.gameId === g.id)) {
+        state.diaryEntries.unshift({ id: "d-" + Date.now(), gameId: g.id, status: "Jugando", category: "Indies favoritos", note: "Añadido desde la ficha." });
+      }
+      state.activeTab = "diary";
+      state.currentScene = 6;
+      saveState();
+      renderAll();
+    }
+
+    function triggerWriteReview(gameId) {
+      state.selectedGameId = gameId;
+      if (!state.currentUser) {
+        const g = getGame(gameId);
+        state.pendingAction = `Escribir reseña de ${g.title}`;
+        state.authGateVisible = true;
+        state.currentScene = 5;
+        renderAll();
+        return;
+      }
+      state.showNewReviewModal = true;
+      state.currentScene = 8;
+      renderAll();
+    }
+
+    function triggerProtectedDiary() {
+      state.pendingAction = "Abrir mi diario personal";
+      state.authGateVisible = true;
+      renderAll();
+    }
+
+    function completeProtectedAuth() {
+      state.currentUser = JSON.parse(JSON.stringify(DEFAULT_STATE.currentUser));
+      state.isReaderMode = false;
+      state.authGateVisible = false;
+      const action = state.pendingAction;
+      state.pendingAction = null;
+      if (action && action.startsWith("Escribir reseña")) {
+        state.showNewReviewModal = true;
+        state.currentScene = 8;
+      } else {
+        state.activeTab = "diary";
+        state.currentScene = 6;
+      }
+      saveState();
+      renderAll();
+    }
+
+    function cancelProtectedAuth() {
+      state.pendingAction = null;
+      state.authGateVisible = false;
+      state.isReaderMode = true;
+      renderAll();
+    }
+
+    function enterReaderMode() {
+      state.currentUser = null;
+      state.isReaderMode = true;
+      state.activeTab = "catalog";
+      renderAll();
+    }
+
+    function loginAsMauro() {
+      state.currentUser = JSON.parse(JSON.stringify(DEFAULT_STATE.currentUser));
+      state.isReaderMode = false;
+      saveState();
+      renderAll();
+    }
+
+    function openWelcome() {
+      state.currentUser = null;
+      state.isReaderMode = false;
+      state.currentScene = 1;
+      renderAll();
+    }
+
+    function toggleSessionQuick() {
+      if (state.currentUser) {
+        state.currentUser = null;
+        state.isReaderMode = false;
+        state.currentScene = 1;
+      } else {
+        loginAsMauro();
+      }
+      renderAll();
+    }
+
+    function setDiaryStatus(st) {
+      state.diaryStatusFilter = st;
+      renderAll();
+    }
+
+    function setDiaryCat(cat) {
+      state.diaryCategoryFilter = cat;
+      renderAll();
+    }
+
+    function cycleEntryStatus(entryId) {
+      const order = ["Pendiente", "Jugando", "Completado", "Abandonado", "Rejugando"];
+      const entry = state.diaryEntries.find(e => e.id === entryId);
+      if (entry) {
+        const next = order[(order.indexOf(entry.status) + 1) % order.length];
+        entry.status = next;
+        state.diaryStatusFilter = "Todos";
+        saveState();
+        renderAll();
+      }
+    }
+
+    function openCategoriesModal() {
+      state.showCategoryModal = true;
+      state.creatingCategoryMode = false;
+      state.currentScene = 7;
+      renderAll();
+    }
+
+    function updateCategoryInput(val) {
+      state.newCategoryName = val;
+      const dup = state.categories.some(c => c.name.toLowerCase() === val.trim().toLowerCase());
+      state.categoryError = dup ? "Nombre duplicado" : null;
+      renderAll();
+    }
+
+    function saveNewCategory() {
+      const clean = state.newCategoryName.trim();
+      if (!clean) {
+        state.categoryError = "El nombre no puede estar vacío";
+        renderAll();
+        return;
+      }
+      if (state.categories.some(c => c.name.toLowerCase() === clean.toLowerCase())) {
+        state.categoryError = "Nombre duplicado";
+        renderAll();
+        return;
+      }
+      state.categories.push({ id: "cat-" + Date.now(), name: clean, color: "#10b981", count: 0 });
+      state.creatingCategoryMode = false;
+      state.categoryError = null;
+      saveState();
+      renderAll();
+    }
+
+    function openReviewDetail(revId) {
+      state.selectedReviewId = revId;
+      state.showReviewDetail = true;
+      renderAll();
+    }
+
+    function publishNewReview() {
+      const clean = state.newReviewText.trim();
+      if (!clean) {
+        state.newReviewError = "El texto no puede estar vacío";
+        renderAll();
+        return;
+      }
+      state.reviews.unshift({
+        id: "rev-" + Date.now(),
+        gameId: state.selectedGameId || "ce",
+        author: state.currentUser ? state.currentUser.username : "mauro.b",
+        rating: 4.9,
+        text: clean
+      });
+      state.newReviewText = "";
+      state.showNewReviewModal = false;
+      saveState();
+      renderAll();
+    }
+
+    function submitReviewComment() {
+      if (!state.currentUser) {
+        state.pendingAction = "Comentar en reseña";
+        state.authGateVisible = true;
+        renderAll();
+        return;
+      }
+      const clean = state.newCommentText.trim();
+      if (!clean) {
+        state.newCommentError = "Escribe un comentario válido";
+        renderAll();
+        return;
+      }
+      state.comments.push({
+        id: "com-" + Date.now(),
+        reviewId: state.selectedReviewId,
+        author: state.currentUser.username,
+        text: clean
+      });
+      state.newCommentText = "";
+      saveState();
+      renderAll();
+    }
+
+    function getSwiftFileForScene(sc) {
+      const map = {
+        1: "RootContentView.swift / AuthViews.swift",
+        2: "RootContentView.swift / HomeView.swift",
+        3: "CatalogView.swift / IGDBService.swift",
+        4: "GameDetailView.swift",
+        5: "AppStateStore.swift / AuthViews.swift",
+        6: "DiaryView.swift",
+        7: "DiaryView.swift (CategoriesManagementSheet)",
+        8: "ReviewsView.swift",
+        9: "ProfileViews.swift (PublicProfileView)",
+        10: "ProfileViews.swift (EditProfileSheet)",
+        11: "ProfileViews.swift / AppStateStore.swift",
+        12: "UIComponents.swift (RecoverableErrorCardView)",
+        13: "GameRevApp.swift"
+      };
+      return map[sc] || "RootContentView.swift";
+    }
+
+    function getSwiftSnippetForScene(sc) {
+      const snippets = {
+        1: `// Escena 1 · Arranque\nif store.isCheckingSession {\n  SplashSessionCheckView()\n} else if store.shouldShowWelcomeGate {\n  WelcomeGateView()\n} else {\n  adaptiveNavigationShell\n}`,
+        2: `// Escena 2 · Navegación Adaptativa\nif horizontalSizeClass == .regular {\n  NavigationSplitView { sidebar } detail: { content }\n} else {\n  TabView(selection: $store.selectedTab) { ... }\n}`,
+        3: `// Escena 3 · Consulta a IGDB\nlet results = try await IGDBService.shared.searchCatalog(\n  query: searchQuery,\n  genre: selectedGenreFilter\n)`,
+        4: `// Escena 4 · Ficha del videojuego\nButton("Guardar en mi diario") {\n  store.requireAuthenticationOrPerform(.saveToDiary(game))\n}`,
+        5: `// Escena 5 · Acción protegida y recuperación\nfunc requireAuthenticationOrPerform(_ action: PendingAction) {\n  if isAuthenticated { executeActionImmediately(action) }\n  else { pendingAction = action; showProtectedAuthSheet = true }\n}`,
+        6: `// Escena 6 · Filtrado del diario\nvar filteredCurrentUserDiaryEntries: [DiaryEntry] {\n  userDiaryEntries().filter { matchesStatus && matchesCategory }\n}`,
+        7: `// Escena 7 · Validación de categoría única\nif isDuplicate {\n  return "Nombre duplicado"\n}`,
+        8: `// Escena 8 · Mini-reseñas y comentarios\nguard !trimmed.isEmpty else {\n  return "El texto de la mini-reseña no puede estar vacío."\n}`,
+        9: `// Escena 9 · Perfil público de creador\nif !profile.contactURL.isEmpty {\n  Button("Visitar sitio de contacto") { openURL(url) }\n}`,
+        10: `// Escena 10 · Edición condicional\nif profileType == .creator {\n  CreatorFieldsSection(studio: $studio, role: $creatorRole)\n}`,
+        11: `// Escena 11 · Control de permisos\nfunc canEditProfile(_ profile: UserProfile) -> Bool {\n  currentUser?.id == profile.ownerId\n}`
+      };
+      return snippets[sc] || snippets[1];
+    }
+
+    // Inicializar aplicación
+    renderAll();
+  </script>
+</body>
+</html>

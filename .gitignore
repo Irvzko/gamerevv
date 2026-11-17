@@ -1,0 +1,22 @@
+# Xcode & Apple
+.DS_Store
+*/.DS_Store
+build/
+DerivedData/
+*.xcuserstate
+project.xcworkspace/xcuserdata/
+*.xcuserdatad/
+*.moved-aside
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# App & Local temporary files
+*.swp
+*.lock
+*~
+
+# Credenciales locales de IGDB / Twitch
+Config/Secrets.xcconfig
+.env

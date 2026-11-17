@@ -1,0 +1,12 @@
+// GameRev.xcconfig
+// Configuración base del proyecto. Este archivo SÍ se sube al repositorio.
+//
+// Las credenciales de IGDB se definen en Config/Secrets.xcconfig (ignorado por git).
+// Para crearlo:  cp Config/Secrets.example.xcconfig Config/Secrets.xcconfig
+//
+// Sin ese archivo el proyecto compila igual y la app usa el catálogo local.
+
+IGDB_CLIENT_ID =
+IGDB_CLIENT_SECRET =
+
+#include? "Secrets.xcconfig"
